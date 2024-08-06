@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deployment-ubuntu-test
+  labels:
+    app.kubernetes.io/created-by: eks-workshop
+    app.kubernetes.io/type: app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: deployment-ubuntu-test
+      app.kubernetes.io/instance: deployment-ubuntu-test
+      app.kubernetes.io/component: service
+  template:
+    metadata:
+      annotations:
+        prometheus.io/path: /actuator/prometheus
+        prometheus.io/port: "8080"
+        prometheus.io/scrape: "true"
+      labels:
+        app.kubernetes.io/name: deployment-ubuntu-test
+        app.kubernetes.io/instance: deployment-ubuntu-test
+        app.kubernetes.io/component: service
+        app.kubernetes.io/created-by: eks-workshop
+    spec:
+      containers:
+        - name: deployment-ubuntu-test
+          image: ubuntu
+          imagePullPolicy: IfNotPresent
+          command:
+            [
+              "sh",
+              "-c",
+              "apt-get update && apt-get install -y nginx && nginx -g 'daemon off;'",
+            ]
